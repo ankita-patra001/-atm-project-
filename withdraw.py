@@ -1,42 +1,45 @@
-"""withdraw function: receives a list of info of account, and returns the account info in a list"""
 import time
-import read_file
+import utils # module for file read/write utils
 
+def withdraw(account):
+    """
+    Perform a withdraw transaction on the account.
 
-def withdraw(ls):
-    # ls is a list of the information of the account
-    # ls[0] id
-    # ls[1] name
-    # ls[2] password
-    # ls[3] balance
+    Update the account balance and write transaction to file.
+    """
+    
+    # Get current values
+    current_balance = int(account['balance'])
+    print(f"Your current balance is: {current_balance}")
 
-    current_balance = int(ls[3])
-    # make changes to another variable to keep the previous balance unchanged in ls[3]
-    # to print it later, then save ls[3] = current_balance
-    print('Your current balance: ' + ls[3])
+    # Get withdraw amount
+    withdraw_amount = int(input("Enter withdraw amount: "))
 
-    withdraw_amount = int(input('Enter withdraw amount: '))
-
+    # Validate amount
     if withdraw_amount > current_balance:
-        print("ERROR: You can't withdraw more than your current balance")
-    else:
-        current_balance -= abs(withdraw_amount)  # to guarantee the entered value
+        print("ERROR: Cannot withdraw more than account balance")
+        return
 
-    file_name = ls[0] + '.txt'
-    process_list = read_file.read_file(file_name)
-    id_file = open(file_name, 'a')
+    # Update balance    
+    new_balance = current_balance - withdraw_amount
+    print(f"New balance is: {new_balance}")
 
-    if len(process_list) == 0:
-        # if there are no processes in the file
-        last_id = 1
-    else:
-        last_id = int(process_list[len(process_list)-1][0]) + 1
-        # get last id and increment it
+    # Write transaction to file
+    transaction = {
+        'id': utils.get_next_id('transactions.txt'),
+        'type': 'withdraw',
+        'date': time.ctime(),
+        'amount': withdraw_amount,
+        'from': current_balance, 
+        'to': new_balance
+    }
+    utils.append_to_file('transactions.txt', transaction)
 
-    id_file.write('{0}\twithdraw\t\t\t{1}\t{2}\t{3}\n'.format(str(last_id), str(time.ctime()), ls[3], str(current_balance)))
-    # write->   process_id    process_name    process_date_and_time    before_process    after_process
-    id_file.close()
-    ls[3] = str(current_balance)
-    print('Your current balance: ' + ls[3])
+    # Update account balance
+    account['balance'] = new_balance
 
-    return ls
+    print("Withdraw successful!")
+
+if __name__ == '__main__':
+    my_account = {'name': 'John', 'balance': 500}
+    withdraw(my_account)
