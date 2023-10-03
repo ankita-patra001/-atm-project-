@@ -1,18 +1,23 @@
-# create Accounts.txt if not exist
-
-try:
-    # read the 'Accounts.txt' file
-    # if you try to open non existing file in read mode, this will throw an error
-    f = open('Accounts.txt', 'r')
-    f.close()
-except FileNotFoundError:
-    # if 'Accounts.txt' file is not found, create it
-    f = open('Accounts.txt', 'w')
-    f.close()
-
-# import modules
-import menu1
 import os
 
-os.system('clear')
-menu1.menu1()  # start the program - call menu1() function
+def main():
+    """
+    Main function that checks if accounts file exists, 
+    creates it if not, and launches the main menu.
+    """
+    
+    # Check if accounts file exists, create it if not
+    if not os.path.exists('accounts.txt'):
+        print('Accounts file not found. Creating new file.')
+        with open('accounts.txt', 'w') as accounts_file:
+            pass
+            
+    # Import and launch the main menu function 
+    import menu
+    os.system('clear')
+    print('Launching main menu...')
+    menu.main_menu()
+
+
+if __name__ == '__main__':
+    main()
